@@ -8,15 +8,25 @@ on:
 jobs:
   build:
     name: Build & Package IPA
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Select Xcode
         run: |
-          brew install xcodegen sox
+          # Use the latest Xcode 16.x available on the runner
+          XCODE_PATH=$(ls -d /Applications/Xcode_16*.app 2>/dev/null | sort -V | tail -1)
+          if [ -z "$XCODE_PATH" ]; then
+            XCODE_PATH=$(ls -d /Applications/Xcode.app 2>/dev/null)
+          fi
+          echo "Using Xcode at: $XCODE_PATH"
+          sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
+          xcodebuild -version
+
+      - name: Install dependencies
+        run: brew install xcodegen sox
 
       - name: Generate sound assets
         run: |
@@ -25,6 +35,9 @@ jobs:
 
       - name: Generate Xcode project
         run: xcodegen generate
+
+      - name: List schemes (debug)
+        run: xcodebuild -project IntervalAlarm.xcodeproj -list
 
       - name: Build app (unsigned for AltStore)
         run: |
@@ -40,8 +53,10 @@ jobs:
 
       - name: Package IPA
         run: |
+          APP_PATH=$(find build -name "IntervalAlarm.app" -type d | head -1)
+          echo "Found app at: $APP_PATH"
           mkdir -p Payload
-          cp -r build/Build/Products/Release-iphoneos/IntervalAlarm.app Payload/
+          cp -r "$APP_PATH" Payload/
           zip -r IntervalAlarm.ipa Payload
 
       - name: Upload IPA artifact
@@ -53,15 +68,24 @@ jobs:
 
   test:
     name: Run Unit Tests
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Select Xcode
         run: |
-          brew install xcodegen sox
+          XCODE_PATH=$(ls -d /Applications/Xcode_16*.app 2>/dev/null | sort -V | tail -1)
+          if [ -z "$XCODE_PATH" ]; then
+            XCODE_PATH=$(ls -d /Applications/Xcode.app 2>/dev/null)
+          fi
+          echo "Using Xcode at: $XCODE_PATH"
+          sudo xcode-select -s "$XCODE_PATH/Contents/Developer"
+          xcodebuild -version
+
+      - name: Install dependencies
+        run: brew install xcodegen sox
 
       - name: Generate sound assets
         run: |
@@ -71,10 +95,22 @@ jobs:
       - name: Generate Xcode project
         run: xcodegen generate
 
+      - name: Find available simulator
+        id: simulator
+        run: |
+          # List available simulators and pick a recent iPhone
+          xcrun simctl list devices available | grep iPhone
+          DEST=$(xcrun simctl list devices available | grep "iPhone" | head -1 | sed 's/^[[:space:]]*//' | cut -d'(' -f1 | sed 's/[[:space:]]*$//')
+          echo "Using simulator: $DEST"
+          echo "name=$DEST" >> "$GITHUB_OUTPUT"
+
       - name: Run tests
         run: |
           xcodebuild test \
             -project IntervalAlarm.xcodeproj \
-            -scheme IntervalAlarmTests \
-            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
-            -configuration Debug
+            -scheme IntervalAlarm \
+            -destination "platform=iOS Simulator,name=${{ steps.simulator.outputs.name }},OS=latest" \
+            -configuration Debug \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
