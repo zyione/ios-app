@@ -1,0 +1,5 @@
+# Force shell scripts to always use LF line endings (required for macOS/Linux runners)
+*.sh text eol=lf
+
+# Keep Swift files auto-detected
+*.swift text=auto
