@@ -27,13 +27,25 @@ An iOS app that automatically schedules repeating alarms at a fixed interval unt
 5. Open `IntervalAlarm.xcodeproj` in Xcode
 6. Build and run on a device or simulator
 
+## Building (No Mac Required)
+
+This project uses **GitHub Actions** to build the `.ipa` on a cloud Mac automatically.
+
+1. Push your code to GitHub
+2. Go to **Actions** tab > **Build iOS App** workflow
+3. The workflow runs automatically on every push (or click **Run workflow** to trigger manually)
+4. Once the build completes, download the `IntervalAlarm-ipa` artifact from the workflow run
+5. The `.ipa` file is inside the downloaded zip
+
+You can also build locally on a Mac — see `Setup (macOS)` above.
+
 ## AltStore Installation
 
-1. Build the app in Xcode (Product > Archive > Export as .ipa)
+1. Download the `.ipa` from GitHub Actions (see above)
 2. Install [AltServer](https://altstore.io) on your PC or Mac
-3. Connect your iPhone via USB
-4. Open AltStore on iPhone > My Apps > tap + > select the .ipa
-5. Re-sign every 7 days (AltStore handles this automatically)
+3. Connect your iPhone via USB and trust the computer
+4. Open AltStore on iPhone > My Apps > tap **+** > select the `.ipa` file
+5. Re-sign every 7 days (AltStore handles this automatically when AltServer is running)
 
 ## Limitations
 
