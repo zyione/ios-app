@@ -1,0 +1,26 @@
+# Xcode
+*.xcodeproj/
+*.xcworkspace/
+build/
+DerivedData/
+*.dSYM/
+*.ipa
+*.xcuserdata/
+xcuserdata/
+
+# Swift Package Manager
+.build/
+Packages/
+.swiftpm/
+
+# macOS
+.DS_Store
+*.swp
+*~
+
+# Generated
+*.hmap
+*.pch
+
+# CocoaPods (if ever used)
+Pods/

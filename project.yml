@@ -1,0 +1,38 @@
+name: IntervalAlarm
+options:
+  bundleIdPrefix: com.intervalalarm
+  deploymentTarget:
+    iOS: "16.0"
+  xcodeVersion: "15.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    TARGETED_DEVICE_FAMILY: 1
+    GENERATE_INFOPLIST_FILE: false
+targets:
+  IntervalAlarm:
+    type: application
+    platform: iOS
+    sources:
+      - path: IntervalAlarm
+        excludes:
+          - Resources/Sounds/.gitkeep
+    resources:
+      - path: IntervalAlarm/Resources/Sounds
+        excludes:
+          - .gitkeep
+    settings:
+      base:
+        INFOPLIST_FILE: IntervalAlarm/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.intervalalarm.app
+        DEVELOPMENT_TEAM: ""
+  IntervalAlarmTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: IntervalAlarmTests
+    dependencies:
+      - target: IntervalAlarm
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: true
