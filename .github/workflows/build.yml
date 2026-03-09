@@ -26,12 +26,17 @@ jobs:
           xcodebuild -version
 
       - name: Install dependencies
-        run: brew install xcodegen sox
+        run: |
+          brew install xcodegen sox
+          pip3 install Pillow
 
       - name: Generate sound assets
         run: |
           chmod +x scripts/generate-sounds.sh
           ./scripts/generate-sounds.sh
+
+      - name: Generate app icon
+        run: python3 scripts/generate-icon.py
 
       - name: Generate Xcode project
         run: xcodegen generate
@@ -85,12 +90,17 @@ jobs:
           xcodebuild -version
 
       - name: Install dependencies
-        run: brew install xcodegen sox
+        run: |
+          brew install xcodegen sox
+          pip3 install Pillow
 
       - name: Generate sound assets
         run: |
           chmod +x scripts/generate-sounds.sh
           ./scripts/generate-sounds.sh
+
+      - name: Generate app icon
+        run: python3 scripts/generate-icon.py
 
       - name: Generate Xcode project
         run: xcodegen generate

@@ -22,7 +22,10 @@ targets:
         excludes:
           - .gitkeep
           - README.md
+      - path: IntervalAlarm/Resources/Assets.xcassets
     settings:
+      base:
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
       base:
         INFOPLIST_FILE: IntervalAlarm/Info.plist
         PRODUCT_BUNDLE_IDENTIFIER: com.intervalalarm.app

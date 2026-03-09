@@ -27,7 +27,7 @@ final class NotificationManager {
     func scheduleAlarms(_ alarms: [AlarmItem], soundName: String, overrideSilentMode: Bool) {
         for alarm in alarms {
             let content = UNMutableNotificationContent()
-            content.title = "Interval Alarm"
+            content.title = "RemindMeInX"
 
             let timeString = alarm.fireDate.formatted12Hour()
             if let label = alarm.label, !label.isEmpty {

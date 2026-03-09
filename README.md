@@ -1,4 +1,4 @@
-# Interval Alarm
+# RemindMeInX
 
 An iOS app that automatically schedules repeating alarms at a fixed interval until a set end time. Built with SwiftUI, distributed via AltStore.
 

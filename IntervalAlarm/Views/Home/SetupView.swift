@@ -30,32 +30,27 @@ struct SetupView: View {
                 // Start time
                 inputCard(title: "Start Time") {
                     Toggle("Use current time", isOn: $session.setupForm.useCurrentTimeAsStart)
-                        .font(.subheadline)
+                        .font(.body)
+                        .padding(.vertical, 4)
 
                     if !session.setupForm.useCurrentTimeAsStart {
                         DatePicker(
-                            "",
+                            "Start at",
                             selection: $session.setupForm.startTime,
                             displayedComponents: .hourAndMinute
                         )
-                        .datePickerStyle(.wheel)
-                        .labelsHidden()
-                        .frame(height: 120)
-                        .clipped()
+                        .datePickerStyle(.compact)
                     }
                 }
 
                 // End time
                 inputCard(title: "End Time") {
                     DatePicker(
-                        "",
+                        "End at",
                         selection: $session.setupForm.endTime,
                         displayedComponents: .hourAndMinute
                     )
-                    .datePickerStyle(.wheel)
-                    .labelsHidden()
-                    .frame(height: 120)
-                    .clipped()
+                    .datePickerStyle(.compact)
                 }
 
                 // Label

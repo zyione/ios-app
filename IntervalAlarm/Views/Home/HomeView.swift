@@ -12,7 +12,7 @@ struct HomeView: View {
                     SetupView()
                 }
             }
-            .navigationTitle("Interval Alarm")
+            .navigationTitle("RemindMeInX")
         }
     }
 }

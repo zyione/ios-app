@@ -8,7 +8,10 @@ struct SoundPickerView: View {
         List {
             ForEach(SoundList.all, id: \.self) { sound in
                 Button {
-                    // Preview the sound
+                    // Select the sound immediately
+                    session.selectSound(sound)
+
+                    // Toggle preview
                     if previewingSound == sound {
                         AudioManager.shared.stopPreview()
                         previewingSound = nil
@@ -21,6 +24,7 @@ struct SoundPickerView: View {
                         // Selected checkmark
                         Image(systemName: session.selectedSound == sound ? "checkmark.circle.fill" : "circle")
                             .foregroundStyle(session.selectedSound == sound ? AppTheme.accent : .secondary)
+                            .font(.title3)
 
                         Text(SoundList.displayName(for: sound))
                             .foregroundStyle(.primary)
@@ -31,29 +35,18 @@ struct SoundPickerView: View {
                         if previewingSound == sound {
                             Image(systemName: "speaker.wave.2.fill")
                                 .foregroundStyle(AppTheme.accent)
-                                .font(.caption)
                         } else {
                             Image(systemName: "speaker.wave.1")
                                 .foregroundStyle(.secondary)
-                                .font(.caption)
                         }
                     }
+                    .padding(.vertical, 4)
                 }
                 .buttonStyle(.plain)
             }
         }
         .listStyle(.insetGrouped)
         .navigationTitle("Alarm Sound")
-        .toolbar {
-            ToolbarItem(placement: .confirmationAction) {
-                Button("Done") {
-                    if let previewing = previewingSound {
-                        session.selectSound(previewing)
-                    }
-                    AudioManager.shared.stopPreview()
-                }
-            }
-        }
         .onDisappear {
             AudioManager.shared.stopPreview()
         }
