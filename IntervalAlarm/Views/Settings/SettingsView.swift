@@ -3,6 +3,8 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject var session: SessionManager
 
+    private let durationOptions = [30, 60, 90]
+
     var body: some View {
         NavigationStack {
             List {
@@ -17,6 +19,31 @@ struct SettingsView: View {
                                 .foregroundStyle(.secondary)
                         }
                     }
+                }
+
+                Section {
+                    Picker("Ring Duration", selection: Binding(
+                        get: { session.alarmDuration },
+                        set: { session.setAlarmDuration($0) }
+                    )) {
+                        Text("30s").tag(30)
+                        Text("1 min").tag(60)
+                        Text("90s").tag(90)
+                    }
+                    .pickerStyle(.segmented)
+
+                    HStack {
+                        Text("Max alarms per session")
+                        Spacer()
+                        Text("\(session.effectiveAlarmLimit)")
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Text("Each alarm rings for \(durationLabel(session.alarmDuration)). Longer ring times use more of the iOS 64-notification limit.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                } header: {
+                    Text("Alarm Duration")
                 }
 
                 Section("Notifications") {
@@ -37,17 +64,19 @@ struct SettingsView: View {
                         Text("1.0")
                             .foregroundStyle(.secondary)
                     }
-
-                    HStack {
-                        Text("iOS Notification Limit")
-                        Spacer()
-                        Text("64 per session")
-                            .foregroundStyle(.secondary)
-                    }
                 }
             }
             .listStyle(.insetGrouped)
             .navigationTitle("Settings")
+        }
+    }
+
+    private func durationLabel(_ seconds: Int) -> String {
+        switch seconds {
+        case 30: return "30 seconds"
+        case 60: return "1 minute"
+        case 90: return "90 seconds"
+        default: return "\(seconds)s"
         }
     }
 }

@@ -14,6 +14,7 @@ final class PersistenceManager {
         static let activeSession = "activeSession"
         static let selectedSound = "selectedSound"
         static let overrideSilentMode = "overrideSilentMode"
+        static let alarmDuration = "alarmDuration"
     }
 
     // MARK: - Setup Form (UserDefaults)
@@ -65,6 +66,17 @@ final class PersistenceManager {
     func loadOverrideSilentMode() -> Bool {
         // Default to false — critical alerts require Apple entitlement
         defaults.object(forKey: Keys.overrideSilentMode) as? Bool ?? false
+    }
+
+    // MARK: - Alarm Duration (UserDefaults)
+
+    func saveAlarmDuration(_ seconds: Int) {
+        defaults.set(seconds, forKey: Keys.alarmDuration)
+    }
+
+    func loadAlarmDuration() -> Int {
+        // Default to 90 seconds (3 notifications × 30s each)
+        defaults.object(forKey: Keys.alarmDuration) as? Int ?? 90
     }
 
     // MARK: - Presets (JSON file in Documents)

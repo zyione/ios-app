@@ -11,13 +11,19 @@ struct SoundPickerView: View {
                     // Select the sound immediately
                     session.selectSound(sound)
 
-                    // Toggle preview
-                    if previewingSound == sound {
+                    // Toggle preview (only for bundled sounds)
+                    if SoundList.isBundledSound(sound) {
+                        if previewingSound == sound {
+                            AudioManager.shared.stopPreview()
+                            previewingSound = nil
+                        } else {
+                            AudioManager.shared.previewSound(sound)
+                            previewingSound = sound
+                        }
+                    } else {
+                        // System default — can't preview, just stop any current preview
                         AudioManager.shared.stopPreview()
                         previewingSound = nil
-                    } else {
-                        AudioManager.shared.previewSound(sound)
-                        previewingSound = sound
                     }
                 } label: {
                     HStack {
@@ -26,18 +32,32 @@ struct SoundPickerView: View {
                             .foregroundStyle(session.selectedSound == sound ? AppTheme.accent : .secondary)
                             .font(.title3)
 
-                        Text(SoundList.displayName(for: sound))
-                            .foregroundStyle(.primary)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(SoundList.displayName(for: sound))
+                                .foregroundStyle(.primary)
+
+                            if sound == SoundList.systemDefault {
+                                Text("Uses your iPhone notification sound")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                            } else if sound == SoundList.iosRingtone {
+                                Text("Custom ringtone")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
 
                         Spacer()
 
-                        // Preview indicator
-                        if previewingSound == sound {
-                            Image(systemName: "speaker.wave.2.fill")
-                                .foregroundStyle(AppTheme.accent)
-                        } else {
-                            Image(systemName: "speaker.wave.1")
-                                .foregroundStyle(.secondary)
+                        // Preview indicator (only for bundled sounds)
+                        if SoundList.isBundledSound(sound) {
+                            if previewingSound == sound {
+                                Image(systemName: "speaker.wave.2.fill")
+                                    .foregroundStyle(AppTheme.accent)
+                            } else {
+                                Image(systemName: "speaker.wave.1")
+                                    .foregroundStyle(.secondary)
+                            }
                         }
                     }
                     .padding(.vertical, 4)

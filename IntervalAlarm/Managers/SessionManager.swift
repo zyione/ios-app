@@ -7,10 +7,21 @@ final class SessionManager: ObservableObject {
     @Published var presets: [Preset]
     @Published var selectedSound: String
     @Published var overrideSilentMode: Bool
+    @Published var alarmDuration: Int // seconds: 30, 60, or 90
     @Published var notificationPermissionGranted: Bool = false
 
     private let persistence = PersistenceManager.shared
     private let notifications = NotificationManager.shared
+
+    /// Number of back-to-back notifications scheduled per alarm (each 30s long).
+    var notificationsPerAlarm: Int {
+        max(1, alarmDuration / 30)
+    }
+
+    /// Effective alarm limit accounting for repeated notifications.
+    var effectiveAlarmLimit: Int {
+        64 / notificationsPerAlarm
+    }
 
     init() {
         let savedForm = PersistenceManager.shared.loadSetupForm()
@@ -18,6 +29,7 @@ final class SessionManager: ObservableObject {
         self.presets = PersistenceManager.shared.loadPresets()
         self.selectedSound = PersistenceManager.shared.loadSelectedSound()
         self.overrideSilentMode = PersistenceManager.shared.loadOverrideSilentMode()
+        self.alarmDuration = PersistenceManager.shared.loadAlarmDuration()
 
         // Recover active session if still valid
         if let session = PersistenceManager.shared.loadActiveSession(), session.endTime > Date() {
@@ -67,15 +79,16 @@ final class SessionManager: ObservableObject {
     }
 
     var exceedsLimit: Bool {
-        alarmCount > 64
+        alarmCount > effectiveAlarmLimit
     }
 
     // MARK: - Session Control
 
     func startSession() {
         var alarms = generateAlarms()
-        if alarms.count > 64 {
-            alarms = Array(alarms.prefix(64))
+        let limit = effectiveAlarmLimit
+        if alarms.count > limit {
+            alarms = Array(alarms.prefix(limit))
         }
 
         guard !alarms.isEmpty else { return }
@@ -89,7 +102,12 @@ final class SessionManager: ObservableObject {
             alarms: alarms
         )
 
-        notifications.scheduleAlarms(alarms, soundName: selectedSound, overrideSilentMode: overrideSilentMode)
+        notifications.scheduleAlarms(
+            alarms,
+            soundName: selectedSound,
+            overrideSilentMode: overrideSilentMode,
+            notificationsPerAlarm: notificationsPerAlarm
+        )
         currentSession = session
         persistence.saveActiveSession(session)
         persistence.saveSetupForm(setupForm)
@@ -151,6 +169,11 @@ final class SessionManager: ObservableObject {
     func setOverrideSilentMode(_ value: Bool) {
         overrideSilentMode = value
         persistence.saveOverrideSilentMode(value)
+    }
+
+    func setAlarmDuration(_ seconds: Int) {
+        alarmDuration = seconds
+        persistence.saveAlarmDuration(seconds)
     }
 
     // MARK: - Permissions

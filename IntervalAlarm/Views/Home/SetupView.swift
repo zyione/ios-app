@@ -83,12 +83,12 @@ struct SetupView: View {
                 // Timeline preview
                 TimelinePreviewView(alarms: alarms)
 
-                // 64-alarm warning
+                // Alarm limit warning
                 if session.exceedsLimit {
                     HStack(spacing: 8) {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .foregroundStyle(.yellow)
-                        Text("iOS limits to 64 notifications. Only the first 64 alarms will fire.")
+                        Text("Only the first \(session.effectiveAlarmLimit) alarms will fire (iOS 64-notification limit with \(session.alarmDuration)s ring duration).")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
