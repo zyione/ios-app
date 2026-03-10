@@ -18,15 +18,10 @@ targets:
           - Resources/Sounds/.gitkeep
           - Resources/Sounds/README.md
     resources:
-      - path: IntervalAlarm/Resources/Sounds
-        excludes:
-          - .gitkeep
-          - README.md
       - path: IntervalAlarm/Resources/Assets.xcassets
     settings:
       base:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-      base:
         INFOPLIST_FILE: IntervalAlarm/Info.plist
         PRODUCT_BUNDLE_IDENTIFIER: com.intervalalarm.app
         DEVELOPMENT_TEAM: ""
